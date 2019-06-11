@@ -25,7 +25,7 @@ function startStreaming() {
       src = new cv.Mat(settings.height, settings.width, cv.CV_8UC4);
       dst = new cv.Mat(settings.height, settings.width, cv.CV_8UC1);
       cap = new cv.VideoCapture(inputVideo);
-      processVideo();
+      window.requestAnimationFrame(processVideo);
     })
     .catch(console.error);
 }
