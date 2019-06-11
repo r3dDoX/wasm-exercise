@@ -5,6 +5,9 @@ let src;
 let dst;
 let cap;
 let stats;
+let gray;
+let faces;
+let classifier;
 
 cv.onRuntimeInitialized = startStreaming;
 
@@ -30,8 +33,8 @@ function startStreaming() {
       src = new cv.Mat(height, width, cv.CV_8UC4);
       dst = new cv.Mat(height, width, cv.CV_8UC4);
       cap = new cv.VideoCapture(inputVideo);
-
-      // TODO: create new needed OpenCV objects
+      gray = new cv.Mat();
+      faces = new cv.RectVector();
 
       return loadFaceDetectionClassifier();
     })
@@ -43,7 +46,16 @@ function processVideo() {
   stats.begin();
   cap.read(src);
 
-  // TODO: Apply classifier and draw found faces on dst-matrix
+  src.copyTo(dst);
+  cv.cvtColor(dst, gray, cv.COLOR_RGBA2GRAY);
+  classifier.detectMultiScale(gray, faces, 1.1, 3, 0);
+
+  for (let i = 0; i < faces.size(); i++) {
+    let face = faces.get(i);
+    let topLeft = new cv.Point(face.x, face.y);
+    let bottomRight = new cv.Point(face.x + face.width, face.y + face.height);
+    cv.rectangle(dst, topLeft, bottomRight, [255, 0, 0, 255]);
+  }
 
   cv.imshow(outputCanvas, dst);
   stats.end();
