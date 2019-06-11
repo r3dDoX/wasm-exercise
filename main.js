@@ -1,3 +1,4 @@
+const SCALED_SIZE = 320;
 const inputVideo = document.querySelector('#inputVideo');
 const outputCanvas = document.querySelector('#outputCanvas');
 let src;
@@ -15,8 +16,10 @@ function startStreaming() {
       const videoTrack = stream.getVideoTracks()[0];
       const settings = videoTrack.getSettings();
 
-      let videoWidthPx = `${settings.width}px`;
-      let videoHeightPx = `${settings.height}px`;
+      const width = SCALED_SIZE;
+      const height = width * (settings.height / settings.width);
+      let videoWidthPx = `${width}px`;
+      let videoHeightPx = `${height}px`;
       inputVideo.setAttribute('width', videoWidthPx);
       inputVideo.setAttribute('height', videoHeightPx);
       outputCanvas.setAttribute('width', videoWidthPx);
@@ -24,8 +27,8 @@ function startStreaming() {
       inputVideo.srcObject = stream;
       inputVideo.play();
 
-      src = new cv.Mat(settings.height, settings.width, cv.CV_8UC4);
-      dst = new cv.Mat(settings.height, settings.width, cv.CV_8UC1);
+      src = new cv.Mat(height, width, cv.CV_8UC4);
+      dst = new cv.Mat(height, width, cv.CV_8UC4);
       cap = new cv.VideoCapture(inputVideo);
 
       // TODO: create new needed OpenCV objects
