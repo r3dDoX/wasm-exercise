@@ -3,6 +3,7 @@ const outputCanvas = document.querySelector('#outputCanvas');
 let src;
 let dst;
 let cap;
+let stats;
 
 cv.onRuntimeInitialized = startStreaming;
 
@@ -10,6 +11,7 @@ function startStreaming() {
   navigator.mediaDevices
     .getUserMedia({ audio: false, video: true })
     .then(stream => {
+      setupStats();
       const videoTrack = stream.getVideoTracks()[0];
       const settings = videoTrack.getSettings();
 
@@ -31,8 +33,22 @@ function startStreaming() {
 }
 
 function processVideo() {
+  stats.begin();
   cap.read(src);
   cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY);
   cv.imshow(outputCanvas, dst);
+  stats.end();
   window.requestAnimationFrame(processVideo);
+}
+
+
+/**
+ * Setup FPS meter
+ */
+function setupStats() {
+  stats = new Stats();
+  stats.showPanel(0);
+  stats.domElement.style.right = '0px';
+  stats.domElement.style.left = '';
+  document.body.appendChild(stats.domElement);
 }
