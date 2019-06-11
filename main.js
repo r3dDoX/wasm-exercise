@@ -27,20 +27,41 @@ function startStreaming() {
       src = new cv.Mat(settings.height, settings.width, cv.CV_8UC4);
       dst = new cv.Mat(settings.height, settings.width, cv.CV_8UC1);
       cap = new cv.VideoCapture(inputVideo);
-      window.requestAnimationFrame(processVideo);
+
+      // TODO: create new needed OpenCV objects
+
+      return loadFaceDetectionClassifier();
     })
+    .then(() => window.requestAnimationFrame(processVideo))
     .catch(console.error);
 }
 
 function processVideo() {
   stats.begin();
   cap.read(src);
-  cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY);
+
+  // TODO: Apply classifier and draw found faces on dst-matrix
+
   cv.imshow(outputCanvas, dst);
   stats.end();
   window.requestAnimationFrame(processVideo);
 }
 
+/**
+ * Load face detection classifier
+ */
+const classifierName = 'haarcascade_frontalface_default.xml';
+const classifierBuffer = fetch(`./face-detection/${classifierName}`)
+  .then(response => response.arrayBuffer());
+
+function loadFaceDetectionClassifier() {
+  return classifierBuffer
+    .then(buffer => {
+      cv.FS_createDataFile('/', classifierName, new Uint8Array(buffer), true, false, false);
+      classifier = new cv.CascadeClassifier();
+      classifier.load(classifierName);
+    })
+}
 
 /**
  * Setup FPS meter
