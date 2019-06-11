@@ -1,4 +1,5 @@
 const inputVideo = document.querySelector('#inputVideo');
+const outputCanvas = document.querySelector('#outputCanvas');
 
 cv.onRuntimeInitialized = startStreaming;
 
