@@ -20,6 +20,7 @@ function startStreaming() {
       outputCanvas.setAttribute('width', videoWidthPx);
       outputCanvas.setAttribute('height', videoHeightPx);
       inputVideo.srcObject = stream;
+      inputVideo.play();
 
       src = new cv.Mat(settings.height, settings.width, cv.CV_8UC4);
       dst = new cv.Mat(settings.height, settings.width, cv.CV_8UC1);
