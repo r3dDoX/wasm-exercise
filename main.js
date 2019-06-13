@@ -59,6 +59,7 @@ function processVideo() {
 
   cv.imshow(outputCanvas, dst);
   stats.end();
+
   window.requestAnimationFrame(processVideo);
 }
 
