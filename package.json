@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "http-server"
+    "start": "http-server",
+    "now-build": "echo \"no build step needed\""
   },
   "author": "",
   "license": "ISC",
