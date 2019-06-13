@@ -5,6 +5,9 @@ let src;
 let dst;
 let cap;
 let stats;
+let gray;
+let faces;
+let classifier;
 
 cv.onRuntimeInitialized = startStreaming;
 
