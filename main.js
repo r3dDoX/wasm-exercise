@@ -1,4 +1,4 @@
-const SCALED_SIZE = 320;
+const SCALED_WIDTH = 240;
 const inputVideo = document.querySelector('#inputVideo');
 const outputCanvas = document.querySelector('#outputCanvas');
 let src;
@@ -6,8 +6,11 @@ let dst;
 let cap;
 let stats;
 let gray;
+let grayScaled;
 let faces;
 let classifier;
+let ratio;
+let scaleRatio;
 
 cv.onRuntimeInitialized = startStreaming;
 
@@ -19,8 +22,10 @@ function startStreaming() {
       const videoTrack = stream.getVideoTracks()[0];
       const settings = videoTrack.getSettings();
 
-      const width = SCALED_SIZE;
-      const height = width * (settings.height / settings.width);
+      const width = settings.width;
+      const height = settings.height;
+      ratio = height / width;
+      scaleRatio = width / SCALED_WIDTH;
       let videoWidthPx = `${width}px`;
       let videoHeightPx = `${height}px`;
       inputVideo.setAttribute('width', videoWidthPx);
@@ -34,6 +39,7 @@ function startStreaming() {
       dst = new cv.Mat(height, width, cv.CV_8UC4);
       cap = new cv.VideoCapture(inputVideo);
       gray = new cv.Mat();
+      grayScaled = new cv.Mat();
       faces = new cv.RectVector();
 
       return loadFaceDetectionClassifier();
@@ -48,12 +54,13 @@ function processVideo() {
 
   src.copyTo(dst);
   cv.cvtColor(dst, gray, cv.COLOR_RGBA2GRAY);
-  classifier.detectMultiScale(gray, faces, 1.1, 3, 0);
+  cv.resize(gray, grayScaled, {width: SCALED_WIDTH, height: SCALED_WIDTH * ratio});
+  classifier.detectMultiScale(grayScaled, faces, 1.1, 3, 0);
 
   for (let i = 0; i < faces.size(); i++) {
     let face = faces.get(i);
-    let topLeft = new cv.Point(face.x, face.y);
-    let bottomRight = new cv.Point(face.x + face.width, face.y + face.height);
+    let topLeft = new cv.Point(face.x * scaleRatio, face.y * scaleRatio);
+    let bottomRight = new cv.Point(face.x * scaleRatio + face.width * scaleRatio, face.y * scaleRatio + face.height * scaleRatio);
     cv.rectangle(dst, topLeft, bottomRight, [255, 0, 0, 255]);
   }
 
